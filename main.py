@@ -1,24 +1,42 @@
-from machine import Pin,I2C,RTC
+from machine import Pin,I2C,RTC,PWM
 import time
 import RGB1602
 from random import randint
 
 # Global variables
-# SETTINGS allows for further menu entries by doing the following:
-# - add a new entry in SETTINGS - the string will be displayed in the lcd
-# - add an 'elif' condition corresponding to the new entry index in the
-# settingsHandler function, then code what you want this entry to do.
 SETTINGS = [
-    "Set alarm"
+    "Set alarm",
+    "Show message"
     ]
 
-# Initiate main clock, lcd and buttons
+MESSAGES0 = [
+    "Ja estas farta",
+    "I love you! <3",
+    "Es tao linda :)"
+    ]
+
+MESSAGES1 = [
+    "deste relogio.."
+    ]
+
+# Buzzer variables - PWM
+BUZZ_FREQ = 4000
+BUZZ_DUTY = 65536 / 2
+BUZZ_LENGTH = 10
+
+# Initiate main clock, lcd, buzzer and buttons
 rtc = machine.RTC()
-rtc.datetime((2023,2,25,3,21,23,30,50))
+rtc.datetime((2023,2,26,3,22,15,30,50))
 lcd=RGB1602.RGB1602(16,2)
-buttonRGB = Pin(12, Pin.IN) # Changes background color                 
-buttonMulti = Pin(14, Pin.IN) # Select menu entry                     
-buttonSettings = Pin(7, Pin.IN) # Enters and navigates menu entries 
+buttonRGB = Pin(12, Pin.IN) # Changes background color                 ---> green wire 
+buttonMulti = Pin(15, Pin.IN) # Select menu entry                      ---> yellow wire
+buttonSettings = Pin(7, Pin.IN) # Enters and navigates menu entries    ---> white wire
+buzzer = PWM(Pin(26))
+
+# Initiate rtc module 
+#i2c = machine.I2C(1, sda=machine.Pin(2),scl=machine.Pin(3),freq=400000)
+#rtc = DS3231(i2c)
+
 
 def setColorRed(lcd):
     """ Change lcd background color to red """
@@ -33,9 +51,6 @@ def setColorGreen(lcd):
     lcd.setRGB(0,255,0)
 
 def changeRGB(lcd):
-    """ Function that will randomly change the
-    lcd color to either blue, red or green. """
-    
     rnd = randint(1,3)
     if rnd == 1:
         setColorBlue(lcd)
@@ -77,8 +92,6 @@ def settingsHandler(pin):
     global alarmHour
     global alarmMinute
     
-    setting = 0
-    
     buttonSettings.irq(handler=None)
     time.sleep(0.2)
     
@@ -87,6 +100,7 @@ def settingsHandler(pin):
     lcd.clear()
     mainTimer = 100
     menuTimer = 100
+    setting = 0
     
     while mainTimer > 0:
         
@@ -95,13 +109,14 @@ def settingsHandler(pin):
         if setting == len(SETTINGS):
             break
         
+        lcd.clear()
         lcd.setCursor(0,0)
         lcd.printout(SETTINGS[setting])
         
         # Changes for the next menu entry
         if buttonSettings.value() == 0:
-            time.sleep(0.2)
             lcd.clear()
+            time.sleep(0.2)
             lcd.setCursor(0,0)
             lcd.printout(SETTINGS[setting])
             setting += 1
@@ -112,59 +127,76 @@ def settingsHandler(pin):
         if buttonMulti.value() == 0:
             time.sleep(0.2)
             
+            # setting = 0 --> set alarm function
             # set hour first, then minutes - one loop for each
             # after the minute loop, display the alarm timer set
-            while menuTimer > 0:
-                lcd.clear()
-                lcd.setCursor(0,0)
-                lcd.printout(f"Hour: {formatNumber(alarmHour)}")
-                
-                if buttonSettings.value() == 0:
-                    alarmHour += 1
-                    if alarmHour > 23:
-                        alarmHour = 0
-                    time.sleep(0.2)
-                    menuTimer = 100
-                
-                if buttonMulti.value() == 0:
-                    menuTimer = 100
-                    break
-            
-                menuTimer -= 1
-                time.sleep(0.1)
-            
-            # Prevents a second read after hour assignment
-            time.sleep(0.2)
-            
-            while menuTimer > 0:
-                lcd.clear()
-                lcd.setCursor(0,0)
-                lcd.printout(f"Minute: {formatNumber(alarmMinute)}")
-                
-                if buttonSettings.value() == 0:
-                    alarmMinute += 1
-                    if alarmMinute > 59:
-                        alarmMinute = 0
-                    time.sleep(0.2)
-                    menuTimer = 100
-                
-                if buttonMulti.value() == 0:
-                    menuTimer = 100
+            if setting == 0:
+                while menuTimer > 0:
+                    lcd.clear()
                     lcd.setCursor(0,0)
-                    lcd.printout("Alarm set to:")
+                    lcd.printout(f"Hour: {formatNumber(alarmHour)}")
+                    
+                    if buttonSettings.value() == 0:
+                        alarmHour += 1
+                        if alarmHour > 23:
+                            alarmHour = 0
+                        time.sleep(0.2)
+                        menuTimer = 100
+                    
+                    if buttonMulti.value() == 0:
+                        menuTimer = 100
+                        break
+                
+                    menuTimer -= 1
+                    time.sleep(0.1)
+                
+                # Prevents a second read after hour assignment
+                time.sleep(0.2)
+                
+                while menuTimer > 0:
+                    lcd.clear()
+                    lcd.setCursor(0,0)
+                    lcd.printout(f"Minute: {formatNumber(alarmMinute)}")
+                    
+                    if buttonSettings.value() == 0:
+                        alarmMinute += 1
+                        if alarmMinute > 59:
+                            alarmMinute = 0
+                        time.sleep(0.2)
+                        menuTimer = 100
+                    
+                    if buttonMulti.value() == 0:
+                        menuTimer = 100
+                        lcd.setCursor(0,0)
+                        lcd.printout("Alarm set to:")
+                        lcd.setCursor(0,1)
+                        lcd.printout(f"{formatNumber(alarmHour)}:{formatNumber(alarmMinute)}")
+                        time.sleep(2)
+                        break
+                                            
+                    menuTimer -= 1
+                    # Reset the alarm variables in case no buttons are pressed
+                    # just before exiting the menuTimer loop
+                    if menuTimer == 1:
+                        alarmHour = 0
+                        alarmMinute = 0
+                    time.sleep(0.1)
+                break
+            elif setting == 1:
+                """index = randint(0,len(MESSAGES0))
+                lcd.clear()
+                lcd.setCursor(0,0)
+                lcd.printout(MESSAGES0[index])
+                
+                if index == 0:
+                    lcd.clear()
                     lcd.setCursor(0,1)
-                    lcd.printout(f"{formatNumber(alarmHour)}:{formatNumber(alarmMinute)}")
-                    time.sleep(2)
-                    break
-                                        
-                menuTimer -= 1
-                # Reset the alarm variables in case no buttons are pressed
-                # just before exiting the menuTimer loop
-                if menuTimer == 1:
-                    alarmHour = 0
-                    alarmMinute = 0
-                time.sleep(0.1)
-            break               
+                    lcd.printout(MESSAGES1[index])
+                
+                time.sleep(5)"""
+                buzzer.value(1)
+                time.sleep(1.5)
+                break                
             
         mainTimer -= 1
         time.sleep(0.1)
@@ -219,7 +251,7 @@ def formatNumber(number):
     else:
         value = str(number)
         
-    return value
+    return value   
 
 
 # Assign irq's
@@ -232,12 +264,17 @@ buttonRGB_state = buttonRGB.value()
 buttonSettings_state = buttonSettings.value()
 buttonMulti_state = buttonMulti.value()
 
-# Alarm variables
+# Alarm variables and initial buzzer config
 alarmHour = 0
 alarmMinute = 0
-
+buzzer.freq(BUZZ_FREQ)
+buzzer.duty_u16(0)
 
 def main():
+    global alarmHour
+    global alarmMinute
+    global BUZZ_LENGTH
+
     while True:
         
         # Update the button values at every clock pulse
@@ -252,6 +289,31 @@ def main():
         lcd.printout(formatTime())
         lcd.setCursor(0,1)
         lcd.printout(formatDate())
+        
+        # Activate buzzer if alarm is triggered
+        if rtc.datetime()[4] == alarmHour and rtc.datetime()[5] == alarmMinute:
+            # Checks for button press for an early alarm stop
+            if buttonMulti.value() == 0:
+                buzzer.duty_u16(0)
+                alarmHour = 0
+                alarmMinute = 0
+                BUZZ_LENGTH = 10
+                continue                
+            
+            # Alternates between low and high values for alarm sound until timer finishes
+            if BUZZ_LENGTH > 0:
+                if BUZZ_LENGTH % 2 == 0:
+                    buzzer.duty_u16(int(BUZZ_DUTY))
+                else:
+                    buzzer.duty_u16(0)
+                BUZZ_LENGTH -= 1
+                
+            else:
+                buzzer.duty_u16(0)
+                alarmHour = 0
+                alarmMinute = 0
+                BUZZ_LENGTH = 10
+            
         time.sleep(1)
 
 main()            
