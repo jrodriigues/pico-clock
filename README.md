@@ -10,3 +10,5 @@
 * Resistors (10k and 220 Ohm) 
 * MicroUSB 3x AA battery holder for power supply - [link](https://thepihut.com/products/microusb-battery-holder-3xaa)
 * Exterior case (3D print created using tinkercad) - [click to download STL file](https://github.com/jrodriigues/pico-clock/files/11189986/pico-alarm-clock-case.zip)
+
+Currently, main.py is still using the onboard RTC module of the Raspberry Pi Pico as I am still trying to find a working driver for the above RTC (that specific module is meant to be used with a Raspberry Pi, not a Pico microcontroller, so I am still trying to find a way to make the I2C work with it)
