@@ -10,5 +10,3 @@
 * Resistors (10k and 220 Ohm) 
 * MicroUSB 3x AA battery holder for power supply - [link](https://thepihut.com/products/microusb-battery-holder-3xaa)
 * Exterior case (3D print created using tinkercad) - [click to download STL file](https://github.com/jrodriigues/pico-clock/files/11189986/pico-alarm-clock-case.zip)
-
-## main.py
