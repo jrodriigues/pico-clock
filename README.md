@@ -6,6 +6,6 @@ This is the project repo that contains files for a personalised multi-function c
 * RTC module for Raspberry Pi - [link](https://thepihut.com/products/mini-rtc-module-for-raspberry-pi)
 * Tactile push buttons - [link](https://thepihut.com/products/tactile-switch-buttons-6mm-tall-x-10-pack)
 * Jumper wires (various sizes)
-* Half breadboard [link](https://thepihut.com/products/raspberry-pi-breadboard-half-size)
-* Buzzer [link](https://thepihut.com/products/buzzer-5v-breadboard-friendly)
+* Half breadboard - [link](https://thepihut.com/products/raspberry-pi-breadboard-half-size)
+* Buzzer - [link](https://thepihut.com/products/buzzer-5v-breadboard-friendly)
 * Resistors (10k and 220 Ohm) 
