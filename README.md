@@ -13,7 +13,7 @@
 
 ***
 
-Currently, main.py is still using the onboard RTC module of the Raspberry Pi Pico as I am still trying to find a working driver for the above RTC (that specific module is meant to be used with a Raspberry Pi, not a Pico microcontroller, so I am still trying to find a way to make the I2C work with it). *DS3231.py* is my current test driver.
+Currently, main.py is still using the onboard RTC module of the Raspberry Pi Pico as I am still trying to find a working driver for the above RTC (that specific module is meant to be used with a Raspberry Pi, not a Pico microcontroller, so I am still trying to find a way to make the I2C work with it). ***DS3231.py*** is my current test driver.
 
-The file *RGB1602.py* is the driver that controls the LCD display, which is provided by the seller Waveshare.
+The file ***RGB1602.py*** is the driver that controls the LCD display, which is provided by the seller Waveshare.
 
