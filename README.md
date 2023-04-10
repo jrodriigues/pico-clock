@@ -1,4 +1,4 @@
-This is the project repo that contains files for a personalised multi-function clock alarm using RPi Pico microcontroller.
+# Project repo that contains files for a personalised multi-function clock alarm using RPi Pico microcontroller. #
 
 ***
 ## Equipment used: ##
