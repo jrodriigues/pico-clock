@@ -8,3 +8,5 @@
 * Half breadboard - [link](https://thepihut.com/products/raspberry-pi-breadboard-half-size)
 * Buzzer - [link](https://thepihut.com/products/buzzer-5v-breadboard-friendly)
 * Resistors (10k and 220 Ohm) 
+* MicroUSB 3x AA battery holder for power supply - [link](https://thepihut.com/products/microusb-battery-holder-3xaa)
+* Exterior case (handmade 3D print created using tinkercad) - [click to download STL file](https://github.com/jrodriigues/pico-clock/files/11189986/pico-alarm-clock-case.zip)
